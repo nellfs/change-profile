@@ -1,0 +1,9 @@
+# github.com/disintegration/imaging v1.6.2
+## explicit
+github.com/disintegration/imaging
+# golang.org/x/image v0.7.0
+## explicit; go 1.12
+golang.org/x/image/bmp
+golang.org/x/image/ccitt
+golang.org/x/image/tiff
+golang.org/x/image/tiff/lzw
