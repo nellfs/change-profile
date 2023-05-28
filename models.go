@@ -17,4 +17,5 @@ type OverlayOptions struct {
 	Halo       *ImageData `json:"halo"`
 	Mustache   *ImageData `json:"mustache"`
 	RedGlasses *ImageData `json:"red_glasses"`
+	CatEars    *ImageData `json:"cat_ears"`
 }

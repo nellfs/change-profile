@@ -45,6 +45,7 @@ func handleOverlay(w http.ResponseWriter, r *http.Request) {
 		"halo":        "assets/items/halo.png",
 		"mustache":    "assets/items/mustache.png",
 		"red_glasses": "assets/items/red_glasses.png",
+		"cat_ears":    "assets/items/cat_ears.png",
 	}
 
 	for key, path := range overlayOptionsPathMap {
@@ -90,6 +91,8 @@ func getOverlayOption(options OverlayOptions, key string) *ImageData {
 		return options.Mustache
 	case "red_glasses":
 		return options.RedGlasses
+	case "cat_ears":
+		return options.CatEars
 	}
 	return nil
 }
