@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"image"
+	"image/color"
 	"log"
 	"net/http"
 
@@ -28,8 +29,8 @@ func handleOverlay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var overlayOptions OverlayOptions
-	err = json.NewDecoder(r.Body).Decode(&overlayOptions)
+	var imageData ImageData
+	err = json.NewDecoder(r.Body).Decode(&imageData)
 	if err != nil {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
@@ -49,15 +50,19 @@ func handleOverlay(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for key, path := range overlayOptionsPathMap {
-		data := getOverlayOption(overlayOptions, key)
+		data := getOverlayOption(imageData.Overlay, key)
 		if data != nil {
 			overlayImg, err := parseImage(path)
 			if err != nil {
 				log.Printf("Failed to load overlay image for key '%s': %v", key, err)
 				continue
 			}
-			overlay := imaging.Resize(overlayImg, data.W, data.H, imaging.NearestNeighbor)
-			baseImg = imaging.Overlay(baseImg, overlay, image.Pt(data.X, data.Y), 1.0)
+			overlayImg = imaging.Resize(overlayImg, data.W, data.H, imaging.NearestNeighbor)
+			overlayFinal := imaging.Rotate(overlayImg, data.R, color.Transparent)
+			PosX := (data.W - overlayFinal.Bounds().Dx()) / 2
+			PosY := (data.H - overlayFinal.Bounds().Dy()) / 2
+
+			baseImg = imaging.Overlay(baseImg, overlayFinal, image.Pt(data.X+PosX, data.Y+PosY), 1.0)
 		}
 	}
 
@@ -71,7 +76,7 @@ func handleOverlay(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Image overlay complete. Result saved as result.png.")
 }
 
-func getOverlayOption(options OverlayOptions, key string) *ImageData {
+func getOverlayOption(options OverlayOptions, key string) *OverlayData {
 	switch key {
 	case "red_hat":
 		return options.RedHat
