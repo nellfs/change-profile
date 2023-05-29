@@ -49,6 +49,8 @@ func handleOverlay(w http.ResponseWriter, r *http.Request) {
 		"cat_ears":    "assets/items/cat_ears.png",
 	}
 
+	baseImg = imaging.Rotate(baseImg, imageData.Rotation, color.Transparent)
+
 	for key, path := range overlayOptionsPathMap {
 		data := getOverlayOption(imageData.Overlay, key)
 		if data != nil {

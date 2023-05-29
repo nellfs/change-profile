@@ -29,7 +29,7 @@ type OverlayOptions struct {
 
 type ImageData struct {
 	Image    int            `json:"image"`
-	Rotation int            `json:"rotation"`
+	Rotation float64        `json:"rotation"`
 	Crop     Crop           `json:"crop"`
 	Overlay  OverlayOptions `json:"overlay"`
 }
