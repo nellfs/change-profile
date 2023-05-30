@@ -22,7 +22,7 @@ func handleOverlay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	baseImgPath := "assets/nellfs/nellfs.png"
+	baseImgPath := "assets/profile/nellfs.png"
 	baseImg, err := parseImage(baseImgPath)
 	if err != nil {
 		http.Error(w, "Failed to load base image", http.StatusInternalServerError)
@@ -66,6 +66,12 @@ func handleOverlay(w http.ResponseWriter, r *http.Request) {
 
 			baseImg = imaging.Overlay(baseImg, overlayFinal, image.Pt(data.X+PosX, data.Y+PosY), 1.0)
 		}
+	}
+	if imageData.Crop.Size > 0 {
+		topLeft := image.Point{X: imageData.Crop.X, Y: imageData.Crop.Y}
+		bottomRight := image.Point{X: imageData.Crop.X + imageData.Crop.Size, Y: imageData.Crop.Y + imageData.Crop.Size}
+		rectangle := image.Rectangle{Min: topLeft, Max: bottomRight}
+		baseImg = imaging.Crop(baseImg, rectangle)
 	}
 
 	resultPath := "result.png"
