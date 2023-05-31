@@ -57,7 +57,7 @@ func handleOverlay(w http.ResponseWriter, r *http.Request) {
 			overlayImg, err := parseImage(path)
 			if err != nil {
 				log.Printf("Failed to load overlay image for key '%s': %v", key, err)
-				continue
+				return
 			}
 			overlayImg = imaging.Resize(overlayImg, data.W, data.H, imaging.NearestNeighbor)
 			overlayFinal := imaging.Rotate(overlayImg, data.R, color.Transparent)
