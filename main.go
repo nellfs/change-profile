@@ -51,22 +51,28 @@ func handleOverlay(w http.ResponseWriter, r *http.Request) {
 
 	baseImg = imaging.Rotate(baseImg, imageData.Rotation, color.Transparent)
 
-	for key, path := range overlayOptionsPathMap {
-		data := getOverlayOption(imageData.Overlay, key)
-		if data != nil {
-			overlayImg, err := parseImage(path)
-			if err != nil {
-				log.Printf("Failed to load overlay image for key '%s': %v", key, err)
-				return
-			}
-			overlayImg = imaging.Resize(overlayImg, data.W, data.H, imaging.NearestNeighbor)
-			overlayFinal := imaging.Rotate(overlayImg, data.R, color.Transparent)
-			PosX := (data.W - overlayFinal.Bounds().Dx()) / 2
-			PosY := (data.H - overlayFinal.Bounds().Dy()) / 2
-
-			baseImg = imaging.Overlay(baseImg, overlayFinal, image.Pt(data.X+PosX, data.Y+PosY), 1.0)
+	order := []string{}
+	for key := range overlayOptionsPathMap {
+		if data := getOverlayOption(imageData.Overlay, key); data != nil {
+			order = append(order, key)
 		}
 	}
+	for _, key := range order {
+		path := overlayOptionsPathMap[key]
+		data := getOverlayOption(imageData.Overlay, key)
+		overlayImg, err := parseImage(path)
+		if err != nil {
+			log.Printf("Failed to load overlay image for key '%s': %v", key, err)
+			return
+		}
+		overlayImg = imaging.Resize(overlayImg, data.W, data.H, imaging.NearestNeighbor)
+		overlayFinal := imaging.Rotate(overlayImg, data.R, color.Transparent)
+		PosX := (data.W - overlayFinal.Bounds().Dx()) / 2
+		PosY := (data.H - overlayFinal.Bounds().Dy()) / 2
+
+		baseImg = imaging.Overlay(baseImg, overlayFinal, image.Pt(data.X+PosX, data.Y+PosY), 1.0)
+	}
+
 	if imageData.Crop != nil && imageData.Crop.Size > 0 {
 		topLeft := image.Point{X: imageData.Crop.X, Y: imageData.Crop.Y}
 		bottomRight := image.Point{X: imageData.Crop.X + imageData.Crop.Size, Y: imageData.Crop.Y + imageData.Crop.Size}
